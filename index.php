@@ -8,7 +8,6 @@ if (!isLoggedIn()) {
 }
 
 $user = getCurrentUser();
-$dailyContentId = 1; // Day 1
 $conn = getDBConnection();
 ?>
 <!DOCTYPE html>
@@ -17,7 +16,7 @@ $conn = getDBConnection();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadhan Glow Up - Day 01</title>
+    <title>Ramadhan Glow Up - 30 Days</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -178,7 +177,7 @@ $conn = getDBConnection();
         .dotted-line {
             border-bottom: 1.5px dotted #d1d1d1;
             width: 100%;
-            height: 30px;
+            min-height: 30px;
             margin-bottom: 5px;
             font-family: 'Dancing Script', cursive;
             font-size: 1.2rem;
@@ -348,17 +347,18 @@ $conn = getDBConnection();
         </div>
 
         <div class="text-center">
-            <p class="text-sm text-gray-500 font-sans-clean mb-2">▼ SPREAD CONTOH: DAY 1 ▼</p>
-            <p class="text-xs text-gray-400">Layout Buka (Lay-Flat)</p>
+            <p class="text-sm text-gray-500 font-sans-clean mb-2">▼ 30 DAYS OF RAMADHAN ▼</p>
+            <p class="text-xs text-gray-400">Scroll untuk melihat semua hari</p>
         </div>
 
-        <!-- INSIDE SPREAD: DAY 1 -->
+        <!-- INSIDE SPREAD: ALL DAYS -->
         <div>
             <?php
             $res = mysqli_query($conn, "SELECT * FROM daily_content ORDER BY day ASC");
             while ($row = mysqli_fetch_assoc($res)):
+                $currentDailyId = $row['id'];
             ?>
-                <div class="spread mb-6">
+                <div class="spread mb-6" data-day="<?= $row['day'] ?>">
                     <!-- LEFT PAGE (MATERI) -->
                     <div class="page page-left">
                         <svg class="floral-ornament top-0 right-0 -mr-8 -mt-8 text-sage rotate-90" viewBox="0 0 100 100" fill="currentColor">
@@ -372,35 +372,29 @@ $conn = getDBConnection();
                             <i class="fas fa-star text-gold mt-1"></i>
                             <div>
                                 <p class="font-sans-clean text-sm italic text-gray-600">
-                                    "<?= $row['surah_text'] ?>"
+                                    "<?= htmlspecialchars($row['surah_text']) ?>"
                                 </p>
-                                <p class="text-xs text-right mt-1 font-bold text-sage">(<?= $row['surah_name'] ?>)</p>
+                                <p class="text-xs text-right mt-1 font-bold text-sage">(<?= htmlspecialchars($row['surah_name']) ?>)</p>
                             </div>
                         </div>
-                        <h3 class="font-serif-modern text-2xl mb-2 text-gray-800"><?= $row['title'] ?></h3>
-                        <p class="font-sans-clean text-xs text-terracotta uppercase tracking-wide mb-4"><?= $row['sub_title'] ?></p>
+                        <h3 class="font-serif-modern text-2xl mb-2 text-gray-800"><?= htmlspecialchars($row['title']) ?></h3>
+                        <p class="font-sans-clean text-xs text-terracotta uppercase tracking-wide mb-4"><?= htmlspecialchars($row['sub_title']) ?></p>
                         <div class="prose prose-sm font-sans-clean text-gray-600 leading-relaxed text-justify text-[13px]">
                             <p class="mb-3">
                                 <span class="font-handwriting text-xl text-sage block mb-1">Assalamu'alaikum, Ramadhan!</span>
                             </p>
                             <p class="mb-3">
-                                <?= $row['description'] ?>
+                                <?= nl2br(htmlspecialchars($row['description'])) ?>
                             </p>
                             <div class="highlight-box text-xs italic bg-gray-100 border-l-4 border-gray-400">
                                 <p class="font-bold text-gray-700 not-italic mb-1">✨ Tips Psikologis Ibu Wulan:</p>
-                                "<?= $row['tips'] ?>"
+                                "<?= htmlspecialchars($row['tips']) ?>"
                             </div>
                             <p>
-                                Kunci hari ini adalah: "<?= $row['daily_focus_key'] ?>"
+                                Kunci hari ini adalah: "<?= htmlspecialchars($row['daily_focus_key']) ?>"
                             </p>
                         </div>
                         <div class="page-footer">
-                            <!-- <div class="flex flex-col items-end">
-                                <span class="text-[10px] mb-1">LEVEL 1: PREPARATION</span>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-fill" style="width: 3.3%;"></div>
-                                </div>
-                            </div> -->
                         </div>
                     </div>
 
@@ -423,8 +417,13 @@ $conn = getDBConnection();
                                 while ($row_fisik = mysqli_fetch_assoc($res_fisik)):
                                 ?>
                                     <div class="custom-checkbox">
-                                        <input type="checkbox" id="task<?= $row_fisik['id'] ?>" data-task-id="<?= $row_fisik['id'] ?>">
-                                        <label for="task<?= $row_fisik['id'] ?>"><span></span><?= $row_fisik['task_desc'] ?></label>
+                                        <input type="checkbox" 
+                                               id="task_<?= $currentDailyId ?>_<?= $row_fisik['id'] ?>" 
+                                               data-task-id="<?= $row_fisik['id'] ?>"
+                                               data-daily-id="<?= $currentDailyId ?>">
+                                        <label for="task_<?= $currentDailyId ?>_<?= $row_fisik['id'] ?>">
+                                            <span></span><?= htmlspecialchars($row_fisik['task_desc']) ?>
+                                        </label>
                                     </div>
                                 <?php endwhile; ?>
                             </div>
@@ -439,8 +438,13 @@ $conn = getDBConnection();
                                 while ($row_spirit = mysqli_fetch_assoc($res_spirit)):
                                 ?>
                                     <div class="custom-checkbox">
-                                        <input type="checkbox" id="task<?= $row_spirit['id'] ?>" data-task-id="<?= $row_spirit['id'] ?>">
-                                        <label for="task<?= $row_spirit['id'] ?>"><span></span><?= $row_spirit['task_desc'] ?></label>
+                                        <input type="checkbox" 
+                                               id="task_<?= $currentDailyId ?>_<?= $row_spirit['id'] ?>" 
+                                               data-task-id="<?= $row_spirit['id'] ?>"
+                                               data-daily-id="<?= $currentDailyId ?>">
+                                        <label for="task_<?= $currentDailyId ?>_<?= $row_spirit['id'] ?>">
+                                            <span></span><?= htmlspecialchars($row_spirit['task_desc']) ?>
+                                        </label>
                                     </div>
                                 <?php endwhile; ?>
                             </div>
@@ -449,50 +453,63 @@ $conn = getDBConnection();
                         <div class="flex-grow">
                             <h4 class="font-serif-modern text-lg mb-2 text-gray-800">Journaling: Intention Setting</h4>
                             <p class="text-xs text-gray-500 mb-2">Apa "Why" (Alasan Kuat) aku ikut Ramadhan tahun ini?</p>
-                            <div class="dotted-line" contenteditable="true" id="journal_why_1"></div>
-                            <div class="dotted-line" contenteditable="true" id="journal_why_2"></div>
-                            <div class="dotted-line" contenteditable="true" id="journal_why_3"></div>
+                            <div class="dotted-line journal-why" 
+                                 contenteditable="true" 
+                                 data-daily-id="<?= $currentDailyId ?>" 
+                                 data-field="why_1"></div>
+                            <div class="dotted-line journal-why" 
+                                 contenteditable="true" 
+                                 data-daily-id="<?= $currentDailyId ?>" 
+                                 data-field="why_2"></div>
+                            <div class="dotted-line journal-why" 
+                                 contenteditable="true" 
+                                 data-daily-id="<?= $currentDailyId ?>" 
+                                 data-field="why_3"></div>
                             <p class="text-xs text-gray-500 mt-4 mb-2">Satu kebiasaan buruk yang ingin aku "puasakan" hari ini?</p>
-                            <div class="dotted-line" contenteditable="true" id="journal_habit_1"></div>
-                            <div class="dotted-line" contenteditable="true" id="journal_habit_2"></div>
-
+                            <div class="dotted-line journal-habit" 
+                                 contenteditable="true" 
+                                 data-daily-id="<?= $currentDailyId ?>" 
+                                 data-field="habit_1"></div>
+                            <div class="dotted-line journal-habit" 
+                                 contenteditable="true" 
+                                 data-daily-id="<?= $currentDailyId ?>" 
+                                 data-field="habit_2"></div>
                             <!-- Save Button for Journal -->
-                            <div class="mt-4 text-center">
-                                <button id="saveJournalBtn" data-daily-content-id="<?= $row['id'] ?>" class="saveJournalBtn bg-sage hover:bg-[#7a8a4b] text-white font-sans-clean font-semibold px-6 py-2 rounded-lg transition duration-200 text-sm">
-                                    <i class="fas fa-save mr-2"></i>Simpan Journal
+                            <!-- <div class="mt-4 text-center">
+                                <button data-daily-content-id="<?= $currentDailyId ?>" 
+                                        class="saveJournalBtn bg-sage hover:bg-[#7a8a4b] text-white font-sans-clean font-semibold px-6 py-2 rounded-lg transition duration-200 text-sm">
+                                    <i class="fas fa-save mr-2"></i>Simpan Journal Day <?= $row['day'] ?>
                                 </button>
-                            </div>
+                            </div> -->
                         </div>
                         <!-- Footer Tracker -->
                         <div class="page-footer bg-sage/10 -mx-8 -mb-8 px-8 py-4 mt-4 border-t-0 flex flex-col gap-2">
                             <div class="flex justify-between items-center w-full">
                                 <span class="text-[10px] font-bold text-sage uppercase">Mood Check</span>
-                                <div class="flex gap-2 text-lg text-gray-400" id="moodButtons">
-                                    <button class="mood-btn hover:scale-110 transition" data-mood="1">😁</button>
-                                    <button class="mood-btn hover:scale-110 transition" data-mood="2">😐</button>
-                                    <button class="mood-btn hover:scale-110 transition" data-mood="3">😴</button>
-                                    <button class="mood-btn hover:scale-110 transition" data-mood="4">😟</button>
+                                <div class="flex gap-2 text-lg text-gray-400 mood-container" data-daily-id="<?= $currentDailyId ?>">
+                                    <button class="mood-btn hover:scale-110 transition" data-mood="1" data-daily-id="<?= $currentDailyId ?>">😁</button>
+                                    <button class="mood-btn hover:scale-110 transition" data-mood="2" data-daily-id="<?= $currentDailyId ?>">😐</button>
+                                    <button class="mood-btn hover:scale-110 transition" data-mood="3" data-daily-id="<?= $currentDailyId ?>">😴</button>
+                                    <button class="mood-btn hover:scale-110 transition" data-mood="4" data-daily-id="<?= $currentDailyId ?>">😟</button>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center w-full">
                                 <span class="text-[10px] font-bold text-sage uppercase">Water</span>
-                                <div class="flex gap-1 text-blue-300 text-xs" id="waterTracker">
-                                    <i class="fas fa-tint water-drop cursor-pointer" data-glass="1"></i>
-                                    <i class="fas fa-tint water-drop cursor-pointer" data-glass="2"></i>
-                                    <i class="fas fa-tint water-drop cursor-pointer" data-glass="3"></i>
-                                    <i class="fas fa-tint water-drop cursor-pointer" data-glass="4"></i>
-                                    <i class="fas fa-tint water-drop cursor-pointer opacity-30" data-glass="5"></i>
-                                    <i class="fas fa-tint water-drop cursor-pointer opacity-30" data-glass="6"></i>
-                                    <i class="fas fa-tint water-drop cursor-pointer opacity-30" data-glass="7"></i>
-                                    <i class="fas fa-tint water-drop cursor-pointer opacity-30" data-glass="8"></i>
+                                <div class="flex gap-1 text-blue-300 text-xs water-container" data-daily-id="<?= $currentDailyId ?>">
+                                    <?php for($i = 1; $i <= 8; $i++): ?>
+                                    <i class="fas fa-tint water-drop cursor-pointer <?= $i > 4 ? 'opacity-30' : '' ?>" 
+                                       data-glass="<?= $i ?>" 
+                                       data-daily-id="<?= $currentDailyId ?>"></i>
+                                    <?php endfor; ?>
                                 </div>
                             </div>
 
                             <!-- Save All Button -->
                             <div class="mt-2 pt-2 border-t border-sage/20">
-                                <button id="saveAllBtn" class="w-full bg-terracotta hover:bg-[#d2625b] text-white font-sans-clean font-bold py-2 rounded-lg transition duration-200 text-sm flex items-center justify-center gap-2">
+                                <button class="saveAllBtn w-full bg-terracotta hover:bg-[#d2625b] text-white font-sans-clean font-bold py-2 px-2 rounded-lg transition duration-200 text-sm flex items-center justify-center gap-2"
+                                        data-daily-content-id="<?= $currentDailyId ?>">
                                     <i class="fas fa-check-circle"></i>
-                                    Simpan Semua Progress Hari Ini
+                                    Simpan Semua Progress Day <?= $row['day'] ?>
                                 </button>
                             </div>
                         </div>
@@ -503,9 +520,8 @@ $conn = getDBConnection();
     </div>
 
     <script>
-        const dailyContentId = <?php echo $dailyContentId; ?>;
-        let saveTimeout;
-        let currentWaterLevel = 0;
+        // Global water levels tracker (per day)
+        const waterLevels = {};
 
         // Show save indicator
         function showSaveIndicator(status, message) {
@@ -521,82 +537,113 @@ $conn = getDBConnection();
             }
         }
 
-        // Load user data on page load
+        // Function untuk auto-resize font
+        function autoResizeFont(element) {
+            const charCount = element.textContent.length;
+            if (charCount > 120) {
+                element.style.fontSize = '0.9rem';
+            } else if (charCount > 80) {
+                element.style.fontSize = '1rem';
+            } else {
+                element.style.fontSize = '1.2rem';
+            }
+        }
+
+        // Load journal data for a specific day
+        function loadJournalData(dailyContentId) {
+            fetch(`get_user_data.php?daily_content_id=${dailyContentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data.journal) {
+                        const journal = data.data.journal;
+                        const whyLines = (journal.ramadhan_why || '').split('\n');
+                        const habitLines = (journal.bad_habit || '').split('\n');
+
+                        // Load "Why" lines
+                        whyLines.forEach((line, index) => {
+                            const el = document.querySelector(
+                                `.journal-why[data-daily-id="${dailyContentId}"][data-field="why_${index + 1}"]`
+                            );
+                            if (el && line) {
+                                el.textContent = line;
+                                autoResizeFont(el);
+                            }
+                        });
+
+                        // Load "Habit" lines
+                        habitLines.forEach((line, index) => {
+                            const el = document.querySelector(
+                                `.journal-habit[data-daily-id="${dailyContentId}"][data-field="habit_${index + 1}"]`
+                            );
+                            if (el && line) {
+                                el.textContent = line;
+                                autoResizeFont(el);
+                            }
+                        });
+
+                        console.log(`Journal loaded for day ${dailyContentId}`);
+                    }
+                })
+                .catch(error => console.error(`Error loading journal for day ${dailyContentId}:`, error));
+        }
+
+        // Load all user data
         async function loadUserData() {
             try {
-                const response = await fetch(`get_user_data.php?daily_content_id=${dailyContentId}`);
-                const result = await response.json();
+                // Get all unique daily content IDs
+                const dailyContentIds = [...new Set(
+                    Array.from(document.querySelectorAll('[data-daily-content-id]'))
+                    .map(el => el.dataset.dailyContentId)
+                )];
 
-                if (result.success) {
-                    const data = result.data;
+                // Load data for each day
+                for (const dailyContentId of dailyContentIds) {
+                    const response = await fetch(`get_user_data.php?daily_content_id=${dailyContentId}`);
+                    const result = await response.json();
 
-                    // Load completed tasks
-                    if (data.completed_tasks) {
-                        Object.keys(data.completed_tasks).forEach(taskId => {
-                            const checkbox = document.querySelector(`input[data-task-id="${taskId}"]`);
-                            if (checkbox && data.completed_tasks[taskId]) {
-                                checkbox.checked = true;
-                            }
-                        });
-                    }
+                    if (result.success) {
+                        const data = result.data;
 
-                    // Load journal
-                    if (data.journal) {
-                        const whyLines = (data.journal.ramadhan_why || '').split('\n');
-                        const habitLines = (data.journal.bad_habit || '').split('\n');
-
-                        whyLines.forEach((line, index) => {
-                            const el = document.getElementById(`journal_why_${index + 1}`);
-                            if (el) {
-                                el.textContent = line;
-                                autoResizeFont(el);
-                            }
-                        });
-
-                        habitLines.forEach((line, index) => {
-                            const el = document.getElementById(`journal_habit_${index + 1}`);
-                            if (el) {
-                                el.textContent = line;
-                                autoResizeFont(el);
-                            };
-                        });
-                    }
-                    // Function untuk auto - resize font
-
-                    function autoResizeFont(element) {
-                        const charCount = element.textContent.length;
-
-                        if (charCount > 120) {
-                            element.style.fontSize = '9px';
-                        } else if (charCount > 80) {
-                            element.style.fontSize = '11px';
-                        } else {
-                            element.style.fontSize = '13px';
+                        // Load completed tasks for this day
+                        if (data.completed_tasks) {
+                            Object.keys(data.completed_tasks).forEach(taskId => {
+                                const checkbox = document.querySelector(
+                                    `input[data-task-id="${taskId}"][data-daily-id="${dailyContentId}"]`
+                                );
+                                if (checkbox && data.completed_tasks[taskId]) {
+                                    checkbox.checked = true;
+                                }
+                            });
                         }
-                    }
 
-                    // Load mood
-                    if (data.mood) {
-                        const moodBtn = document.querySelector(`.mood-btn[data-mood="${data.mood}"]`);
-                        if (moodBtn) {
-                            moodBtn.classList.add('text-terracotta');
-                            moodBtn.style.transform = 'scale(1.2)';
+                        // Load journal for this day
+                        loadJournalData(dailyContentId);
+
+                        // Load mood for this day
+                        if (data.mood) {
+                            const moodBtn = document.querySelector(
+                                `.mood-btn[data-mood="${data.mood}"][data-daily-id="${dailyContentId}"]`
+                            );
+                            if (moodBtn) {
+                                moodBtn.classList.add('text-terracotta');
+                                moodBtn.style.transform = 'scale(1.2)';
+                            }
                         }
-                    }
 
-                    // Load water level
-                    if (data.water_level) {
-                        currentWaterLevel = data.water_level;
-                        updateWaterDisplay();
+                        // Load water level for this day
+                        if (data.water_level) {
+                            waterLevels[dailyContentId] = parseInt(data.water_level);
+                            updateWaterDisplay(dailyContentId);
+                        }
                     }
                 }
             } catch (error) {
-                console.error('Error loading data:', error);
+                console.error('Error loading user data:', error);
             }
         }
 
         // Save checkbox progress
-        async function saveProgress(taskId, isCompleted) {
+        async function saveProgress(taskId, isCompleted, dailyContentId) {
             showSaveIndicator('saving', 'Menyimpan...');
 
             const formData = new FormData();
@@ -622,21 +669,15 @@ $conn = getDBConnection();
             }
         }
 
-        // Save journal with manual button click
+        // Save journal
         function saveJournal(dailyContentId) {
             showSaveIndicator('saving', 'Menyimpan journal...');
 
-            const whyLines = [];
-            for (let i = 1; i <= 3; i++) {
-                const el = document.getElementById(`journal_why_${i}`);
-                if (el) whyLines.push(el.textContent.trim());
-            }
+            const whyElements = document.querySelectorAll(`.journal-why[data-daily-id="${dailyContentId}"]`);
+            const habitElements = document.querySelectorAll(`.journal-habit[data-daily-id="${dailyContentId}"]`);
 
-            const habitLines = [];
-            for (let i = 1; i <= 2; i++) {
-                const el = document.getElementById(`journal_habit_${i}`);
-                if (el) habitLines.push(el.textContent.trim());
-            }
+            const whyLines = Array.from(whyElements).map(el => el.textContent.trim());
+            const habitLines = Array.from(habitElements).map(el => el.textContent.trim());
 
             const formData = new FormData();
             formData.append('daily_content_id', dailyContentId);
@@ -644,28 +685,29 @@ $conn = getDBConnection();
             formData.append('bad_habit', habitLines.join('\n'));
 
             fetch('save_journal.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        showSaveIndicator('saved', '✓ Journal tersimpan');
-                    } else {
-                        showSaveIndicator('error', '✗ Gagal menyimpan journal');
-                    }
-                })
-                .catch(error => {
-                    showSaveIndicator('error', '✗ Error');
-                    console.error('Error:', error);
-                });
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showSaveIndicator('saved', '✓ Journal tersimpan');
+                } else {
+                    showSaveIndicator('error', '✗ ' + (result.message || 'Gagal menyimpan journal'));
+                }
+            })
+            .catch(error => {
+                showSaveIndicator('error', '✗ Error koneksi');
+                console.error('Error:', error);
+            });
         }
 
         // Save mood
-        async function saveMood(mood) {
+        async function saveMood(mood, dailyContentId) {
             showSaveIndicator('saving', 'Menyimpan mood...');
 
             const formData = new FormData();
+            formData.append('daily_content_id', dailyContentId);
             formData.append('mood', mood);
 
             try {
@@ -678,12 +720,14 @@ $conn = getDBConnection();
                 if (result.success) {
                     showSaveIndicator('saved', '✓ Mood tersimpan');
 
-                    // Update UI
-                    document.querySelectorAll('.mood-btn').forEach(btn => {
+                    // Update UI only for this day
+                    document.querySelectorAll(`.mood-btn[data-daily-id="${dailyContentId}"]`).forEach(btn => {
                         btn.classList.remove('text-terracotta');
                         btn.style.transform = '';
                     });
-                    const selectedBtn = document.querySelector(`.mood-btn[data-mood="${mood}"]`);
+                    const selectedBtn = document.querySelector(
+                        `.mood-btn[data-mood="${mood}"][data-daily-id="${dailyContentId}"]`
+                    );
                     if (selectedBtn) {
                         selectedBtn.classList.add('text-terracotta');
                         selectedBtn.style.transform = 'scale(1.2)';
@@ -697,10 +741,14 @@ $conn = getDBConnection();
             }
         }
 
-        // Update water display
-        function updateWaterDisplay() {
-            document.querySelectorAll('.water-drop').forEach((drop, index) => {
-                if (index < currentWaterLevel) {
+        // Update water display for specific day
+        function updateWaterDisplay(dailyContentId) {
+            const level = waterLevels[dailyContentId] || 0;
+            const drops = document.querySelectorAll(`.water-drop[data-daily-id="${dailyContentId}"]`);
+            
+            drops.forEach((drop, index) => {
+                const glassNum = parseInt(drop.dataset.glass);
+                if (glassNum <= level) {
                     drop.classList.remove('opacity-30');
                 } else {
                     drop.classList.add('opacity-30');
@@ -709,10 +757,11 @@ $conn = getDBConnection();
         }
 
         // Save water level
-        async function saveWaterLevel(level) {
+        async function saveWaterLevel(level, dailyContentId) {
             showSaveIndicator('saving', 'Menyimpan...');
 
             const formData = new FormData();
+            formData.append('daily_content_id', dailyContentId);
             formData.append('level', level);
 
             try {
@@ -733,16 +782,18 @@ $conn = getDBConnection();
             }
         }
 
-        // Save all data at once
-        async function saveAll() {
+        // Save all data for a specific day
+        async function saveAll(dailyContentId) {
             showSaveIndicator('saving', 'Menyimpan semua data...');
 
             let allSuccess = true;
             let errorMessages = [];
 
             try {
-                // 1. Save all checked tasks
-                const checkboxes = document.querySelectorAll('input[type="checkbox"][data-task-id]:checked');
+                // 1. Save all checked tasks for this day
+                const checkboxes = document.querySelectorAll(
+                    `input[type="checkbox"][data-daily-id="${dailyContentId}"]:checked`
+                );
                 for (const checkbox of checkboxes) {
                     const taskId = checkbox.dataset.taskId;
                     const formData = new FormData();
@@ -758,21 +809,15 @@ $conn = getDBConnection();
                     if (!result.success) {
                         allSuccess = false;
                         errorMessages.push('Tasks');
+                        break;
                     }
                 }
 
                 // 2. Save journal
-                const whyLines = [];
-                for (let i = 1; i <= 3; i++) {
-                    const el = document.getElementById(`journal_why_${i}`);
-                    if (el) whyLines.push(el.textContent.trim());
-                }
-
-                const habitLines = [];
-                for (let i = 1; i <= 2; i++) {
-                    const el = document.getElementById(`journal_habit_${i}`);
-                    if (el) habitLines.push(el.textContent.trim());
-                }
+                const whyElements = document.querySelectorAll(`.journal-why[data-daily-id="${dailyContentId}"]`);
+                const habitElements = document.querySelectorAll(`.journal-habit[data-daily-id="${dailyContentId}"]`);
+                const whyLines = Array.from(whyElements).map(el => el.textContent.trim());
+                const habitLines = Array.from(habitElements).map(el => el.textContent.trim());
 
                 if (whyLines.some(line => line) || habitLines.some(line => line)) {
                     const journalData = new FormData();
@@ -792,10 +837,13 @@ $conn = getDBConnection();
                 }
 
                 // 3. Save mood if selected
-                const selectedMood = document.querySelector('.mood-btn.text-terracotta');
+                const selectedMood = document.querySelector(
+                    `.mood-btn.text-terracotta[data-daily-id="${dailyContentId}"]`
+                );
                 if (selectedMood) {
                     const mood = selectedMood.dataset.mood;
                     const moodData = new FormData();
+                    moodData.append('daily_content_id', dailyContentId);
                     moodData.append('mood', mood);
 
                     const moodResponse = await fetch('save_mood.php', {
@@ -810,8 +858,10 @@ $conn = getDBConnection();
                 }
 
                 // 4. Save water level
+                const currentWaterLevel = waterLevels[dailyContentId] || 0;
                 if (currentWaterLevel > 0) {
                     const waterData = new FormData();
+                    waterData.append('daily_content_id', dailyContentId);
                     waterData.append('level', currentWaterLevel);
 
                     const waterResponse = await fetch('save_water.php', {
@@ -847,28 +897,18 @@ $conn = getDBConnection();
             document.querySelectorAll('input[type="checkbox"][data-task-id]').forEach(checkbox => {
                 checkbox.addEventListener('change', (e) => {
                     const taskId = e.target.dataset.taskId;
+                    const dailyId = e.target.dataset.dailyId;
                     const isCompleted = e.target.checked;
-                    saveProgress(taskId, isCompleted);
+                    saveProgress(taskId, isCompleted, dailyId);
                 });
             });
 
-            // Save Journal Button listener
-            // document.getElementById('saveJournalBtn').addEventListener('click', (e) => {
-            //     const dailyContentId = e.currentTarget.dataset.dailyContentId;
-            //     console.log("dailyContent", dailyContentId)
-            //     saveJournal(dailyContentId);
-            // });
-
+            // Save Journal Button listeners (event delegation)
             document.addEventListener('click', function(e) {
-                // Cek apakah yang diklik adalah tombol dengan class 'saveJournalBtn'
-                // atau icon di dalam tombol tersebut
                 const btn = e.target.closest('.saveJournalBtn');
-
                 if (btn) {
+                    e.preventDefault();
                     const dailyContentId = btn.dataset.dailyContentId;
-                    console.log("dailyContent ID:", dailyContentId);
-
-                    // Panggil fungsi simpan Anda
                     saveJournal(dailyContentId);
                 }
             });
@@ -877,7 +917,8 @@ $conn = getDBConnection();
             document.querySelectorAll('.mood-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const mood = btn.dataset.mood;
-                    saveMood(mood);
+                    const dailyId = btn.dataset.dailyId;
+                    saveMood(mood, dailyId);
                 });
             });
 
@@ -885,15 +926,26 @@ $conn = getDBConnection();
             document.querySelectorAll('.water-drop').forEach(drop => {
                 drop.addEventListener('click', () => {
                     const glass = parseInt(drop.dataset.glass);
-                    currentWaterLevel = glass;
-                    updateWaterDisplay();
-                    saveWaterLevel(currentWaterLevel);
+                    const dailyId = drop.dataset.dailyId;
+                    waterLevels[dailyId] = glass;
+                    updateWaterDisplay(dailyId);
+                    saveWaterLevel(glass, dailyId);
                 });
             });
 
-            // Save All button listener
-            document.getElementById('saveAllBtn').addEventListener('click', () => {
-                saveAll();
+            // Save All button listeners
+            document.querySelectorAll('.saveAllBtn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const dailyContentId = btn.dataset.dailyContentId;
+                    saveAll(dailyContentId);
+                });
+            });
+
+            // Auto-resize font on input
+            document.querySelectorAll('.dotted-line').forEach(line => {
+                line.addEventListener('input', (e) => {
+                    autoResizeFont(e.target);
+                });
             });
         });
     </script>
