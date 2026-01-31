@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '../db/config.php';
 
 // Simple auth check - you can enhance this
 if (!isLoggedIn()) {

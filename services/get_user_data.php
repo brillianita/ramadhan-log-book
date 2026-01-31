@@ -1,6 +1,6 @@
 <?php
 // get_user_data.php - Retrieve User Data for Display
-require_once 'config.php';
+require_once '../db/config.php';
 
 header('Content-Type: application/json');
 
