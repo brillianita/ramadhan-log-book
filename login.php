@@ -1,5 +1,5 @@
 <?php
-require_once '../db/config.php';
+require_once './db/config.php';
 
 // Jika sudah login, redirect ke index
 if (isLoggedIn()) {
@@ -126,7 +126,7 @@ if (isLoggedIn()) {
             formData.append('action', 'login');
 
             try {
-                const response = await fetch('auth.php', {
+                const response = await fetch('./services/auth.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -149,7 +149,7 @@ if (isLoggedIn()) {
             formData.append('action', 'register');
 
             try {
-                const response = await fetch('auth.php', {
+                const response = await fetch('./services/auth.php', {
                     method: 'POST',
                     body: formData
                 });
