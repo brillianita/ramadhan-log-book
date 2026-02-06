@@ -15,7 +15,7 @@ $dailyContentId = 1; // Day 1
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadhan Glow Up - Day 01</title>
+    <title>Ramadhan Glow Up - Day 02</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -283,7 +283,7 @@ $dailyContentId = 1; // Day 1
                     <path d="M50 0 C20 0 0 20 0 50 C0 80 20 100 50 100 C80 100 100 80 100 50 C100 20 80 0 50 0 Z M50 90 C30 90 10 70 10 50 C10 30 30 10 50 10 C70 10 90 30 90 50 C90 70 70 90 50 90 Z" opacity="0.1"/>
                 </svg>
                 <div class="flex items-baseline justify-between mb-6 border-b-2 border-dashed border-[#8A9A5B] pb-2">
-                    <h2 class="font-serif-modern text-4xl text-sage font-bold">Day 01</h2>
+                    <h2 class="font-serif-modern text-4xl text-sage font-bold">Day 02</h2>
                     <span class="font-sans-clean text-xs uppercase tracking-widest text-terracotta font-bold">The Foundation</span>
                 </div>
                 <div class="mood-booster flex gap-3 items-start">
