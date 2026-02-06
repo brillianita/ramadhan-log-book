@@ -1,6 +1,6 @@
 <?php
 // save_progress.php - Save Daily Task Progress
-require_once 'config.php';
+require_once '../db/config.php';
 
 header('Content-Type: application/json');
 

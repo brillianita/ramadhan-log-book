@@ -1,6 +1,6 @@
 <?php
 // auth.php - Authentication Handler
-require_once 'config.php';
+require_once '../db/config.php';
 
 header('Content-Type: application/json');
 

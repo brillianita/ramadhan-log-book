@@ -1,0 +1,291 @@
+/* styles.css - Ramadhan Glow Up Styles */
+
+:root {
+    --primary-sage: #8A9A5B;
+    --secondary-terracotta: #E2725B;
+    --bg-ivory: #FDFBF7;
+    --text-charcoal: #333333;
+    --highlight-gold: #E1AD01;
+    --page-width: 176mm;
+    --page-height: 250mm;
+    --shadow-book: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    background-color: #e0e0e0;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-charcoal);
+    margin: 0;
+    padding: 40px 0;
+    overflow-x: hidden;
+}
+
+/* Font Families */
+.font-serif-modern {
+    font-family: 'Playfair Display', serif;
+}
+
+.font-sans-clean {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.font-handwriting {
+    font-family: 'Dancing Script', cursive;
+}
+
+/* Text Colors */
+.text-sage {
+    color: var(--primary-sage);
+}
+
+.text-terracotta {
+    color: var(--secondary-terracotta);
+}
+
+.text-gold {
+    color: var(--highlight-gold);
+}
+
+/* Background Colors */
+.bg-ivory {
+    background-color: var(--bg-ivory);
+}
+
+.bg-sage {
+    background-color: var(--primary-sage);
+}
+
+.bg-terracotta {
+    background-color: var(--secondary-terracotta);
+}
+
+/* Book Container & Layout */
+.book-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+}
+
+.spread {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    max-width: 100%;
+}
+
+.page {
+    width: var(--page-width);
+    height: var(--page-height);
+    background-color: var(--bg-ivory);
+    box-shadow: var(--shadow-book);
+    position: relative;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    .page {
+        width: 95vw;
+        height: auto;
+        min-height: 140vw;
+        margin-bottom: 20px;
+    }
+
+    .spread {
+        gap: 20px;
+    }
+}
+
+/* Cover Page */
+.cover-page {
+    background-color: var(--primary-sage);
+    color: white;
+    text-align: center;
+    border-radius: 2px 8px 8px 2px;
+    position: relative;
+}
+
+.cover-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    background-image: radial-gradient(#fff 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.gold-foil-text {
+    color: #FFD700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #FFD700, #FDB931, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Page Styles */
+.page-left {
+    border-radius: 4px 0 0 4px;
+    background: linear-gradient(90deg, #FDFBF7 95%, #f0eee9 100%);
+}
+
+.page-right {
+    border-radius: 0 4px 4px 0;
+    background: linear-gradient(-90deg, #FDFBF7 95%, #f0eee9 100%);
+}
+
+/* Highlight Boxes */
+.highlight-box {
+    background-color: rgba(226, 114, 91, 0.1);
+    border-left: 4px solid var(--secondary-terracotta);
+    padding: 15px;
+    border-radius: 0 8px 8px 0;
+    margin: 15px 0;
+}
+
+.mood-booster {
+    border: 1px dashed var(--highlight-gold);
+    background-color: rgba(225, 173, 1, 0.05);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+/* Journal Lines */
+.dotted-line {
+    border-bottom: 1.5px dotted #d1d1d1;
+    width: 100%;
+    min-height: 30px;
+    margin-bottom: 5px;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.2rem;
+    color: #555;
+    padding-left: 10px;
+    background: transparent;
+    outline: none;
+}
+
+/* Custom Checkboxes */
+.custom-checkbox input {
+    display: none;
+}
+
+.custom-checkbox label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.custom-checkbox span {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--secondary-terracotta);
+    border-radius: 4px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.custom-checkbox input:checked + label span {
+    background-color: var(--secondary-terracotta);
+    color: white;
+}
+
+.custom-checkbox input:checked + label span::after {
+    content: '✔';
+    font-size: 12px;
+}
+
+/* Page Footer */
+.page-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.progress-bar-container {
+    width: 100px;
+    height: 4px;
+    background-color: #eee;
+    border-radius: 2px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--primary-sage);
+    border-radius: 2px;
+}
+
+/* Floral Ornaments */
+.floral-ornament {
+    position: absolute;
+    opacity: 0.1;
+    width: 150px;
+    height: 150px;
+    pointer-events: none;
+}
+
+/* User Info Bar */
+.user-info {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+}
+
+/* Save Indicator */
+.save-indicator {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
+    z-index: 1000;
+    display: none;
+}
+
+.save-indicator.saving {
+    background: #FFF3CD;
+    color: #856404;
+    display: block;
+}
+
+.save-indicator.saved {
+    background: #D4EDDA;
+    color: #155724;
+    display: block;
+}
+
+.save-indicator.error {
+    background: #F8D7DA;
+    color: #721C24;
+    display: block;
+}

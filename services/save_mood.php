@@ -1,6 +1,6 @@
 <?php
-// save_water.php - Save Water Intake Level
-require_once 'config.php';
+// save_mood.php - Save Mood Check
+require_once '../db/config.php';
 
 header('Content-Type: application/json');
 
@@ -10,20 +10,20 @@ if (!isLoggedIn()) {
 }
 
 $userId = getCurrentUserId();
-$level = intval($_POST['level'] ?? 0);
+$mood = intval($_POST['mood'] ?? 0);
 
-// Level range: 0-8 (8 glasses)
-if ($level < 0 || $level > 8) {
-    echo json_encode(['success' => false, 'message' => 'Water level tidak valid (0-8)']);
+// Mood values: 1 = 😁, 2 = 😐, 3 = 😴, 4 = 😟
+if ($mood < 1 || $mood > 4) {
+    echo json_encode(['success' => false, 'message' => 'Mood value tidak valid']);
     exit;
 }
 
 $conn = getDBConnection();
 
-// Check if water level entry exists for today
+// Check if mood entry exists for today
 $today = date('Y-m-d');
 $stmt = $conn->prepare("
-    SELECT id FROM water_level 
+    SELECT id FROM mood_check 
     WHERE user_id = ? AND DATE(created_at) = ?
 ");
 $stmt->bind_param("is", $userId, $today);
@@ -31,50 +31,48 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    // Update existing water level
+    // Update existing mood
     $row = $result->fetch_assoc();
-    $waterId = $row['id'];
+    $moodId = $row['id'];
     $stmt->close();
     
     $updateStmt = $conn->prepare("
-        UPDATE water_level 
-        SET level = ? 
+        UPDATE mood_check 
+        SET mood = ? 
         WHERE id = ?
     ");
-    $updateStmt->bind_param("ii", $level, $waterId);
+    $updateStmt->bind_param("ii", $mood, $moodId);
     
     if ($updateStmt->execute()) {
         echo json_encode([
             'success' => true,
-            'message' => 'Water level berhasil diupdate',
+            'message' => 'Mood berhasil diupdate',
             'action' => 'update',
-            'water_id' => $waterId,
-            'level' => $level
+            'mood_id' => $moodId
         ]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Gagal update water level']);
+        echo json_encode(['success' => false, 'message' => 'Gagal update mood']);
     }
     $updateStmt->close();
 } else {
-    // Insert new water level
+    // Insert new mood
     $stmt->close();
     
     $insertStmt = $conn->prepare("
-        INSERT INTO water_level (user_id, level) 
+        INSERT INTO mood_check (user_id, mood) 
         VALUES (?, ?)
     ");
-    $insertStmt->bind_param("ii", $userId, $level);
+    $insertStmt->bind_param("ii", $userId, $mood);
     
     if ($insertStmt->execute()) {
         echo json_encode([
             'success' => true,
-            'message' => 'Water level berhasil disimpan',
+            'message' => 'Mood berhasil disimpan',
             'action' => 'insert',
-            'water_id' => $conn->insert_id,
-            'level' => $level
+            'mood_id' => $conn->insert_id
         ]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Gagal simpan water level']);
+        echo json_encode(['success' => false, 'message' => 'Gagal simpan mood']);
     }
     $insertStmt->close();
 }
