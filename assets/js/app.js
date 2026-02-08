@@ -317,7 +317,6 @@ async function saveAll(dailyContentId) {
             formData.append('daily_content_id', dailyContentId);
             formData.append('task_id', taskId);
             formData.append('is_completed', 1);
-
             const response = await fetch('../../services/save_progress.php', {
                 method: 'POST',
                 body: formData

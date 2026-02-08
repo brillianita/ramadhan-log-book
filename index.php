@@ -143,13 +143,13 @@ $conn = getDBConnection();
                                     <h4 class="font-sans-clean font-bold text-sm text-gray-700">Merawat Diri (Fisik)</h4>
                                 </div>
                                 <?php
-                                $res_fisik = mysqli_query($conn, "SELECT dt.id, t.task_description AS task_desc FROM daily_task dt LEFT JOIN tasks t ON t.id = dt.task_id WHERE t.category_id = 1 AND dt.daily_content_id = " . (int)$row['id']);
+                                $res_fisik = mysqli_query($conn, "SELECT dt.id, t.id AS task_id, t.task_description AS task_desc FROM daily_task dt LEFT JOIN tasks t ON t.id = dt.task_id WHERE t.category_id = 1 AND dt.daily_content_id = " . (int)$row['id']);
                                 while ($row_fisik = mysqli_fetch_assoc($res_fisik)):
                                 ?>
                                     <div class="custom-checkbox">
                                         <input type="checkbox" 
                                                id="task_<?= $currentDailyId ?>_<?= $row_fisik['id'] ?>" 
-                                               data-task-id="<?= $row_fisik['id'] ?>"
+                                               data-task-id="<?= $row_fisik['task_id'] ?>"
                                                data-daily-id="<?= $currentDailyId ?>">
                                         <label for="task_<?= $currentDailyId ?>_<?= $row_fisik['id'] ?>">
                                             <span></span><?= htmlspecialchars($row_fisik['task_desc']) ?>
@@ -164,13 +164,13 @@ $conn = getDBConnection();
                                     <h4 class="font-sans-clean font-bold text-sm text-gray-700">Menata Hati (Spiritual)</h4>
                                 </div>
                                 <?php
-                                $res_spirit = mysqli_query($conn, "SELECT dt.id, t.task_description AS task_desc FROM daily_task dt JOIN tasks t ON dt.task_id = t.id WHERE t.category_id = 2 AND dt.daily_content_id = " . (int)$row['id']);
+                                $res_spirit = mysqli_query($conn, "SELECT dt.id, t.id AS task_id, t.task_description AS task_desc FROM daily_task dt JOIN tasks t ON dt.task_id = t.id WHERE t.category_id = 2 AND dt.daily_content_id = " . (int)$row['id']);
                                 while ($row_spirit = mysqli_fetch_assoc($res_spirit)):
                                 ?>
                                     <div class="custom-checkbox">
                                         <input type="checkbox" 
                                                id="task_<?= $currentDailyId ?>_<?= $row_spirit['id'] ?>" 
-                                               data-task-id="<?= $row_spirit['id'] ?>"
+                                               data-task-id="<?= $row_spirit['task_id'] ?>"
                                                data-daily-id="<?= $currentDailyId ?>">
                                         <label for="task_<?= $currentDailyId ?>_<?= $row_spirit['id'] ?>">
                                             <span></span><?= htmlspecialchars($row_spirit['task_desc']) ?>

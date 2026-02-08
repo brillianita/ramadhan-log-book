@@ -13,12 +13,11 @@ let allTasks = [];
 
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
-        type === 'success' ? 'bg-green-500' : 'bg-red-500'
-    } text-white font-medium animate-fade-in`;
+    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white font-medium animate-fade-in`;
     toast.textContent = message;
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.remove();
     }, 3000);
@@ -44,7 +43,7 @@ async function loadKontenData() {
     try {
         const response = await fetch('api_konten.php?action=list');
         const data = await response.json();
-        
+
         if (data.success) {
             renderKontenTable(data.content);
         }
@@ -57,7 +56,7 @@ async function loadKontenData() {
 function renderKontenTable(content) {
     const tbody = document.getElementById('kontenTableBody');
     if (!tbody) return;
-    
+
     if (content.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -70,7 +69,7 @@ function renderKontenTable(content) {
         `;
         return;
     }
-    
+
     tbody.innerHTML = content.map(item => `
         <tr class="border-b hover:bg-gray-50 transition">
             <td class="px-6 py-4">
@@ -114,21 +113,21 @@ async function openKontenModal() {
     currentEditId = null;
     document.getElementById('kontenForm').reset();
     document.getElementById('kontenModalTitle').textContent = 'Tambah Konten Ramadhan';
-    
+
     // Load available tasks
     await loadAvailableTasks();
-    
+
     openModal('kontenModal');
 }
 
 async function editKonten(id) {
     currentEditId = id;
     document.getElementById('kontenModalTitle').textContent = 'Edit Konten Ramadhan';
-    
+
     try {
         const response = await fetch(`api_konten.php?action=get&id=${id}`);
         const data = await response.json();
-        
+
         if (data.success) {
             const item = data.content;
             document.getElementById('day').value = item.day;
@@ -139,14 +138,14 @@ async function editKonten(id) {
             document.getElementById('description').value = item.description;
             document.getElementById('tips').value = item.tips;
             document.getElementById('daily_focus_key').value = item.daily_focus_key;
-            
+
             // Load tasks and check linked ones
             await loadAvailableTasks();
             const linkedTaskIds = item.linked_tasks.map(t => t.id);
             document.querySelectorAll('input[name="task_ids[]"]').forEach(checkbox => {
                 checkbox.checked = linkedTaskIds.includes(parseInt(checkbox.value));
             });
-            
+
             openModal('kontenModal');
         }
     } catch (error) {
@@ -159,7 +158,7 @@ async function loadAvailableTasks() {
     try {
         const response = await fetch('api_konten.php?action=get_available_tasks');
         const data = await response.json();
-        
+
         if (data.success) {
             allTasks = data.tasks;
             renderTaskCheckboxes(data.tasks);
@@ -172,7 +171,7 @@ async function loadAvailableTasks() {
 function renderTaskCheckboxes(tasks) {
     const container = document.getElementById('taskCheckboxes');
     if (!container) return;
-    
+
     const groupedTasks = {};
     tasks.forEach(task => {
         if (!groupedTasks[task.category_name]) {
@@ -180,7 +179,7 @@ function renderTaskCheckboxes(tasks) {
         }
         groupedTasks[task.category_name].push(task);
     });
-    
+
     container.innerHTML = Object.entries(groupedTasks).map(([category, categoryTasks]) => `
         <div class="mb-4">
             <p class="font-semibold text-sm text-gray-700 mb-2">${category}</p>
@@ -198,18 +197,18 @@ function renderTaskCheckboxes(tasks) {
 
 async function deleteKonten(id, title) {
     if (!confirm(`Hapus konten "${title}"?\n\nSemua data terkait akan ikut terhapus!`)) return;
-    
+
     try {
         const formData = new FormData();
         formData.append('action', 'delete');
         formData.append('id', id);
-        
+
         const response = await fetch('api_konten.php', {
             method: 'POST',
             body: formData
         });
         const data = await response.json();
-        
+
         if (data.success) {
             showToast('Konten berhasil dihapus');
             loadKontenData();
@@ -224,25 +223,25 @@ async function deleteKonten(id, title) {
 
 async function saveKonten(event) {
     event.preventDefault();
-    
+
     const formData = new FormData(event.target);
     formData.append('action', currentEditId ? 'update' : 'create');
     if (currentEditId) {
         formData.append('id', currentEditId);
     }
-    
+
     // Get checked task IDs
     const taskIds = Array.from(document.querySelectorAll('input[name="task_ids[]"]:checked'))
         .map(cb => cb.value);
     formData.append('task_ids', JSON.stringify(taskIds));
-    
+
     try {
         const response = await fetch('api_konten.php', {
             method: 'POST',
             body: formData
         });
         const data = await response.json();
-        
+
         if (data.success) {
             showToast(currentEditId ? 'Konten berhasil diupdate' : 'Konten berhasil ditambahkan');
             closeModal('kontenModal');
@@ -284,7 +283,7 @@ function updateTasksSummary(summary) {
 function renderTasksTable(tasks) {
     const tbody = document.getElementById('tasksTableBody');
     if (!tbody) return;
-    
+
     if (tasks.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -297,16 +296,15 @@ function renderTasksTable(tasks) {
         `;
         return;
     }
-    
+
     tbody.innerHTML = tasks.map(task => `
         <tr class="border-b hover:bg-gray-50 transition">
             <td class="px-6 py-4">
                 <p class="font-semibold text-gray-900">${task.task_description}</p>
             </td>
             <td class="px-6 py-4">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                    task.category_id === 1 ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
-                }">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${task.category_id === 1 ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
+        }">
                     ${task.category_name}
                 </span>
             </td>
@@ -337,16 +335,16 @@ function openTaskModal() {
 async function editTask(id) {
     currentEditId = id;
     document.getElementById('taskModalTitle').textContent = 'Edit Task';
-    
+
     try {
         const response = await fetch(`api_tasks.php?action=get&id=${id}`);
         const data = await response.json();
-        
+
         if (data.success) {
             const task = data.task;
             document.getElementById('task_description').value = task.task_description;
             document.getElementById('category_id').value = task.category_id;
-            
+
             openModal('taskModal');
         }
     } catch (error) {
@@ -357,18 +355,18 @@ async function editTask(id) {
 
 async function deleteTask(id, description) {
     if (!confirm(`Hapus task "${description}"?`)) return;
-    
+
     try {
         const formData = new FormData();
         formData.append('action', 'delete');
         formData.append('id', id);
-        
+
         const response = await fetch('api_tasks.php', {
             method: 'POST',
             body: formData
         });
         const data = await response.json();
-        
+
         if (data.success) {
             showToast('Task berhasil dihapus');
             loadTasksData();
@@ -383,20 +381,20 @@ async function deleteTask(id, description) {
 
 async function saveTask(event) {
     event.preventDefault();
-    
+
     const formData = new FormData(event.target);
     formData.append('action', currentEditId ? 'update' : 'create');
     if (currentEditId) {
         formData.append('id', currentEditId);
     }
-    
+
     try {
         const response = await fetch('api_tasks.php', {
             method: 'POST',
             body: formData
         });
         const data = await response.json();
-        
+
         if (data.success) {
             showToast(currentEditId ? 'Task berhasil diupdate' : 'Task berhasil ditambahkan');
             closeModal('taskModal');
@@ -418,7 +416,7 @@ async function loadMonitoringData() {
     try {
         const response = await fetch('api_monitoring.php?action=list');
         const data = await response.json();
-        
+
         if (data.success) {
             updateMonitoringSummary(data.summary);
             renderMonitoringTable(data.users);
@@ -439,7 +437,7 @@ function updateMonitoringSummary(summary) {
 function renderMonitoringTable(users) {
     const tbody = document.getElementById('monitoringTableBody');
     if (!tbody) return;
-    
+
     if (users.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -451,11 +449,11 @@ function renderMonitoringTable(users) {
         `;
         return;
     }
-    
+
     tbody.innerHTML = users.map(user => {
         const statusClass = user.progress >= 50 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
         const statusText = user.progress >= 50 ? 'Aktif' : 'Tidak Aktif';
-        
+
         return `
             <tr class="border-b hover:bg-gray-50 transition">
                 <td class="px-6 py-4">
@@ -502,7 +500,7 @@ async function viewUserDetail(userId) {
     try {
         const response = await fetch(`api_monitoring.php?action=get_user_detail&user_id=${userId}`);
         const data = await response.json();
-        
+        console.log("data task", data);
         if (data.success) {
             renderUserDetailModal(data);
             openModal('userDetailModal');
@@ -516,7 +514,7 @@ async function viewUserDetail(userId) {
 function renderUserDetailModal(data) {
     const user = data.user;
     const container = document.getElementById('userDetailContent');
-    
+
     container.innerHTML = `
         <div class="space-y-6">
             <!-- User Info -->
@@ -534,22 +532,34 @@ function renderUserDetailModal(data) {
             <!-- Daily Progress -->
             <div>
                 <h4 class="font-bold text-gray-800 mb-3">Progress Harian (${data.daily_progress.length} hari)</h4>
-                <div class="max-h-64 overflow-y-auto space-y-2">
+                <div class="max-h-96 overflow-y-auto space-y-2">
                     ${data.daily_progress.map(day => {
                         const percentage = day.total_tasks > 0 ? Math.round((day.completed_tasks / day.total_tasks) * 100) : 0;
                         return `
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                                        ${day.day}
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <!-- Day Header (Clickable) -->
+                                <div class="flex items-center justify-between p-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                                     onclick="toggleDayTasks(${day.day})">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                                            ${day.day}
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">${day.title}</p>
+                                            <p class="text-sm text-gray-600">${day.completed_tasks}/${day.total_tasks} tasks</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="font-medium text-gray-900">${day.title}</p>
-                                        <p class="text-sm text-gray-600">${day.completed_tasks}/${day.total_tasks} tasks</p>
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-lg font-bold ${percentage === 100 ? 'text-green-600' : 'text-gray-700'}">${percentage}%</p>
+                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200" id="arrow-${day.day}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <p class="text-lg font-bold ${percentage === 100 ? 'text-green-600' : 'text-gray-700'}">${percentage}%</p>
+                                
+                                <!-- Task List (Collapsible) -->
+                                <div id="tasks-day-${day.day}" class="hidden bg-white">
+                                    ${renderTasksByCategory(day.tasks)}
                                 </div>
                             </div>
                         `;
@@ -579,12 +589,63 @@ function renderUserDetailModal(data) {
 // =========================================
 // INITIALIZATION
 // =========================================
+function renderTasksByCategory(tasks) {
+    if (!tasks || tasks.length === 0) {
+        return '<p class="p-4 text-gray-500 text-sm">Tidak ada tasks</p>';
+    }
+    
+    // Group tasks by category
+    const grouped = tasks.reduce((acc, task) => {
+        if (!acc[task.category_name]) {
+            acc[task.category_name] = [];
+        }
+        acc[task.category_name].push(task);
+        return acc;
+    }, {});
+    
+    return `
+        <div class="p-4 space-y-4">
+            ${Object.entries(grouped).map(([category, categoryTasks]) => `
+                <div>
+                    <h5 class="font-semibold text-gray-700 mb-2 text-sm">${category}</h5>
+                    <div class="space-y-2">
+                        ${categoryTasks.map(task => `
+                            <div class="flex items-start gap-2 text-sm">
+                                <div class="flex-shrink-0 mt-0.5">
+                                    ${task.is_completed == 1 
+                                        ? '<svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>'
+                                        : '<svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd"></path></svg>'
+                                    }
+                                </div>
+                                <span class="${task.is_completed == 1 ? 'text-gray-900' : 'text-gray-500'}">
+                                    ${task.task_description}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
 
-document.addEventListener('DOMContentLoaded', function() {
+function toggleDayTasks(day) {
+    const tasksDiv = document.getElementById(`tasks-day-${day}`);
+    const arrow = document.getElementById(`arrow-${day}`);
+    
+    if (tasksDiv.classList.contains('hidden')) {
+        tasksDiv.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        tasksDiv.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+document.addEventListener('DOMContentLoaded', function () {
     // Check which page is active
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page') || 'dashboard';
-    
+
     if (page === 'master-content') {
         loadKontenData();
     } else if (page === 'master-tasks') {

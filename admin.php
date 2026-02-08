@@ -118,7 +118,10 @@ $page = $_GET['page'] ?? 'dashboard';
                         <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="text-lg font-bold text-gray-800 mb-6">Top Tasks</h3><div style="height:300px"><canvas id="taskChart"></canvas></div></div>
                         <div class="bg-white p-6 rounded-2xl border shadow-sm"><h3 class="text-lg font-bold text-gray-800 mb-6">Mood User</h3><div style="height:300px" class="flex items-center justify-center"><canvas id="moodChart"></canvas></div></div>
                     </div>
-                    <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-lg p-6"><h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-emerald-800"><i class="fas fa-lightbulb text-yellow-500"></i> Insights</h3><ul class="space-y-2 text-gray-700"><li class="flex gap-2"><span class="text-emerald-600">•</span><span>Completion rate <strong><?= $completionPercentage ?>%</strong></span></li><li class="flex gap-2"><span class="text-emerald-600">•</span><span><strong><?= $totalJournals ?></strong> journal terisi</span></li><li class="flex gap-2"><span class="text-emerald-600">•</span><span>Air rata-rata <strong><?= round($avgWater, 1) ?> gelas/hari</strong></span></li></ul></div>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-lg p-6"><h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-emerald-800">
+                        <i class="fas fa-lightbulb text-yellow-500"></i> Insights</h3><ul class="space-y-2 text-gray-700">
+                            <li class="flex gap-2"><span class="text-emerald-600">•</span><span>Completion rate <strong><?= $completionPercentage ?>%</strong></span></li><li class="flex gap-2"><span class="text-emerald-600">•</span><span><strong><?= $totalJournals ?></strong> journal terisi</span></li><li class="flex gap-2"><span class="text-emerald-600">•</span><span>Air rata-rata <strong><?= round($avgWater, 1) ?> gelas/hari</strong></span></li></ul>
+                    </div>
                 </div>
 
                 <?php elseif ($page === 'master-content'): ?>

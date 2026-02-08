@@ -19,18 +19,18 @@ switch ($action) {
             FROM daily_logs
             WHERE is_completed = 1
         ")->fetch_assoc()['c'];
-        
+
         $totalDays = $conn->query("SELECT COUNT(*) as c FROM daily_content")->fetch_assoc()['c'];
         $totalLogs = $conn->query("SELECT COUNT(*) as c FROM daily_logs WHERE is_completed = 1")->fetch_assoc()['c'];
         $avgProgress = $totalUsers > 0 && $totalDays > 0 ? round(($totalLogs / ($totalUsers * $totalDays * 6)) * 100) : 0;
-        
+
         $summary = [
             'total_users' => (int)$totalUsers,
             'active_users' => (int)$activeUsers,
             'avg_progress' => (int)$avgProgress,
             'total_logs' => (int)$totalLogs
         ];
-        
+
         // Get user list with progress
         $query = $conn->query("
             SELECT 
@@ -48,7 +48,7 @@ switch ($action) {
             GROUP BY u.id, u.name, u.email, u.created_at
             ORDER BY progress DESC, u.name ASC
         ");
-        
+
         $users = [];
         while ($row = $query->fetch_assoc()) {
             $row['days_filled'] = (int)$row['days_filled'];
@@ -57,32 +57,33 @@ switch ($action) {
             $row['progress'] = (int)$row['progress'];
             $users[] = $row;
         }
-        
+
         echo json_encode([
             'success' => true,
             'summary' => $summary,
             'users' => $users
         ]);
         break;
-        
+
     case 'get_user_detail':
         $userId = intval($_GET['user_id']);
-        
+
         // Get user info
         $userStmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
         $userStmt->bind_param("i", $userId);
         $userStmt->execute();
         $user = $userStmt->get_result()->fetch_assoc();
         $userStmt->close();
-        
+
         if (!$user) {
             echo json_encode(['success' => false, 'message' => 'User not found']);
             break;
         }
-        
+
         // Get daily progress
         $dailyStmt = $conn->prepare("
             SELECT 
+                dc.id AS content_id,
                 dc.day,
                 dc.title,
                 COUNT(CASE WHEN dl.is_completed = 1 THEN 1 END) as completed_tasks,
@@ -97,10 +98,34 @@ switch ($action) {
         $dailyResult = $dailyStmt->get_result();
         $dailyProgress = [];
         while ($row = $dailyResult->fetch_assoc()) {
+            // Get tasks for this day
+            $taskStmt = $conn->prepare("
+            SELECT 
+                t.id,
+                t.task_description,
+                c.name as category_name,
+                COALESCE(dl.is_completed, 0) as is_completed
+            FROM daily_task dt
+            JOIN tasks t ON dt.task_id = t.id
+            JOIN categories c ON t.category_id = c.id
+            LEFT JOIN daily_logs dl ON dl.daily_task_id = t.id 
+                AND dl.daily_content_id = dt.daily_content_id 
+                AND dl.user_id = ?
+            WHERE dt.daily_content_id = ?
+            ORDER BY c.id, t.id
+        ");
+            $taskStmt->bind_param("ii", $userId, $row['content_id']);
+            $taskStmt->execute();
+            $taskResult = $taskStmt->get_result();
+            $row['tasks'] = [];
+            while ($task = $taskResult->fetch_assoc()) {
+                $row['tasks'][] = $task;
+            }
+            $taskStmt->close();
             $dailyProgress[] = $row;
         }
         $dailyStmt->close();
-        
+
         // Get journals
         $journalStmt = $conn->prepare("
             SELECT uj.*, dc.day, dc.title
@@ -117,7 +142,7 @@ switch ($action) {
             $journals[] = $row;
         }
         $journalStmt->close();
-        
+
         // Get mood history
         $moodStmt = $conn->prepare("
             SELECT mood, created_at
@@ -134,7 +159,7 @@ switch ($action) {
             $moods[] = $row;
         }
         $moodStmt->close();
-        
+
         // Get water history
         $waterStmt = $conn->prepare("
             SELECT level, created_at
@@ -151,7 +176,7 @@ switch ($action) {
             $water[] = $row;
         }
         $waterStmt->close();
-        
+
         echo json_encode([
             'success' => true,
             'user' => $user,
@@ -161,10 +186,9 @@ switch ($action) {
             'water' => $water
         ]);
         break;
-        
+
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
 }
 
 closeDBConnection($conn);
-?>
